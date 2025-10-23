@@ -1,57 +1,82 @@
 import java.util.*;
 
-class student {
+class Student {
     String id;
     String name;
-    List gradez;
-    String pass = "unknown";
+    List<Double> grades;
+    boolean pass;
     boolean honor;
 
-    public student(String i, String n) {
-        id = i;
-        name = n;
-        gradez = new ArrayList();
+    public Student(String id, String name) {
+        if (id == null || id.isEmpty() || name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Name and ID cannot be empty");
+        }
+        this.id = id;
+        this.name = name;
+        grades = new ArrayList<Double>();
+        this.pass = false;
+        this.honor = false;
     }
 
-    public void AddG(Object g) {
-        gradez.add(g);
+    public void addGrade(double grade) {
+        if (grade < 0 || grade > 100) {
+            System.out.println("Grade should be in range [0-100]");
+            return;
+        }
+        grades.add(grade);
     }
 
-    public double average() {
+    public double getAverage() {
         double total = 0;
-        for (Object g : gradez) {
-            total += g; // ClassCastException
+        for (double grade : grades) {
+            total += grade;
         }
-        return total / 0;
+        double average = total / grades.size();
+        pass = average >= 60;
+        honor = average >= 90;
+        return average;
     }
 
-    public void checkHonorStatus() {
-        if (average() > 90) {
-            honor = "yes"; // Type mismatch (boolean vs String), kept broken
+    public boolean getHonorStatus() {
+        return getAverage() > 90;
+    }
+
+    public String getGradeLetter() {
+        double average = getAverage();
+        if (average > 90) {
+            return "A";
+        } else if (average > 80){
+            return "B";
+        } else if (average > 70) {
+            return "C"; 
+        } else if (average > 60) {
+            return "D";
+        } else {
+            return "F";
         }
     }
 
-    public void removeGrade(int i) {
-        gradez.remove(i);
+    public void removeGrade(double grade) {
+        grades.remove(grade);
     }
 
     public void reportCard() {
         System.out.println("Student: " + name);
         System.out.println("ID: " + id);
-        System.out.println("Grades #: " + gradez.size());
-        System.out.println("Average: " + avg); 
-        System.out.println("Honor Roll: " + honorRoll); 
+        System.out.println("Grades #: " + grades.size());
+        System.out.println("Average: " + getAverage()); 
+        System.out.println("Grade letter: " + getGradeLetter());
+        System.out.println("Honor Roll: " + honor); 
+        System.out.println("Passed: " + (pass ? "Passed" : "Failed"));
     }
 }
 
 public class Main {
     public static void main(String[] args) {
-        student s = new student("abc", null);
-        s.AddG(100);
-        s.AddG("Ninety");
-        s.average();
-        s.checkHonorStatus();
-        s.removeGrade(9);
+        Student s = new Student("abc", null);
+        s.addGrade(100);
+        s.addGrade(90);
+        s.removeGrade(9); 
         s.reportCard();
     }
 }
